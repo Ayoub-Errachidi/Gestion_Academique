@@ -6,13 +6,6 @@
 
     <h2 class="mb-4">Liste des Etudiants</h2>
 
-    {{-- Message Success --}}
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
     {{-- Bouton Ajouter + Recherche --}}
     <div class="d-flex justify-content-between mb-3">
 
