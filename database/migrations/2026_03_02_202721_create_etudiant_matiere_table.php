@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('etudiant_id')->constrained()->onDelete('cascade');
             $table->foreignId('matiere_id')->constrained()->onDelete('cascade');
 
-            $table->float('note')->nullable();
+            $table->float('note'); // Nullable();
             $table->timestamps();
         });
     }

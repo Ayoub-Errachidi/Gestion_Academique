@@ -4,13 +4,13 @@
 
 <div class="container">
 
-    <h2 class="mb-4">Liste des Étudiants</h2>
+    <h2 class="mb-4">Liste des Etudiants</h2>
 
     {{-- Bouton Ajouter + Recherche --}}
     <div class="d-flex justify-content-between mb-3">
 
         <a href="{{ route('etudiants.create') }}" class="btn btn-primary">
-            + Ajouter Étudiant
+            + Ajouter Etudiant
         </a>
 
         <form method="GET" action="{{ route('etudiants.index') }}" class="d-flex">
@@ -22,7 +22,7 @@
             <select name="classe_id" class="form-select me-2">
                 <option value="">Toutes les classes</option>
                 @foreach($classes as $classe)
-                    <option value="{{ $classe->id }}"
+                    <option value="{{ $classe->id }}" 
                         {{ request('classe_id') == $classe->id ? 'selected' : '' }}>
                         {{ $classe->nom }}
                     </option>
@@ -39,13 +39,19 @@
     {{-- Filtres --}}
     <div class="mb-3">
         <a href="{{ route('etudiants.index') }}"
-           class="btn btn-secondary btn-sm">Tous</a>
+           class="btn btn-secondary btn-sm">
+            Tous
+        </a>
 
         <a href="{{ route('etudiants.index', array_merge(request()->all(), ['status' => 'active'])) }}"
-           class="btn btn-success btn-sm">Actifs</a>
+           class="btn btn-success btn-sm">
+            Actifs
+        </a>
 
         <a href="{{ route('etudiants.index', array_merge(request()->all(), ['status' => 'deleted'])) }}"
-           class="btn btn-danger btn-sm">Supprimés</a>
+           class="btn btn-danger btn-sm">
+            Supprimés
+        </a>
     </div>
 
     {{-- Table --}}
@@ -71,6 +77,7 @@
                     </a>
                 </th>
                 <th>Matières (Notes)</th>
+                <th>Moyenne</th>
                 <th>Statut</th>
                 <th>Actions</th>
             </tr>
@@ -94,6 +101,11 @@
                     @endforeach
                 </td>
 
+                {{-- Moyenne --}}
+                <td>
+                    {{ $etudiant->moyenne() !== null ? round($etudiant->moyenne(), 2) : '-' }}
+                </td>
+
                 {{-- Statut --}}
                 <td>
                     @if($etudiant->deleted_at)
@@ -106,40 +118,24 @@
                 {{-- Actions --}}
                 <td>
                     @if(!$etudiant->deleted_at)
-                        <a href="{{ route('etudiants.edit', $etudiant->id) }}"
-                           class="btn btn-warning btn-sm">Modifier</a>
-
-                        <form action="{{ route('etudiants.destroy', $etudiant->id) }}"
-                              method="POST"
-                              class="d-inline">
+                        <a href="{{ route('etudiants.edit', $etudiant->id) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        <form action="{{ route('etudiants.destroy', $etudiant->id) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit"
-                                    class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Supprimer ?')">
-                                Supprimer
-                            </button>
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer ?')">Supprimer</button>
                         </form>
                     @else
-                        <form action="{{ route('etudiants.restore', $etudiant->id) }}"
-                              method="POST"
-                              class="d-inline">
+                        <form action="{{ route('etudiants.restore', $etudiant->id) }}" method="POST" class="d-inline">
                             @csrf
                             @method('PUT')
-                            <button type="submit"
-                                    class="btn btn-success btn-sm">
-                                Restaurer
-                            </button>
+                            <button type="submit" class="btn btn-success btn-sm">Restaurer</button>
                         </form>
                     @endif
                 </td>
-
             </tr>
             @empty
             <tr>
-                <td colspan="9" class="text-center">
-                    Aucun étudiant trouvé
-                </td>
+                <td colspan="10" class="text-center">Aucun étudiant trouvé</td>
             </tr>
             @endforelse
         </tbody>

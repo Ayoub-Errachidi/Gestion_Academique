@@ -62,20 +62,20 @@
             @enderror
         </div>
 
-        {{-- Matières (select multiple) --}}
+        {{-- Matières avec notes --}}
         <div class="mb-3">
-            <label for="matieres" class="form-label">Matières</label>
-            <select name="matieres[]" class="form-select" multiple>
-                @foreach($matieres as $matiere)
-                    <option value="{{ $matiere->id }}"
-                        {{ (isset($etudiant) && $etudiant->matieres->contains($matiere->id)) || (collect(old('matieres'))->contains($matiere->id)) ? 'selected' : '' }}>
-                        {{ $matiere->nom }} ({{ $matiere->coefficient }})
-                    </option>
-                @endforeach
-            </select>
-            @error('matieres')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
+            <label class="form-label">Matières & Notes</label>
+            @foreach($matieres as $matiere)
+                @php
+                    $checked = isset($etudiant) ? $etudiant->matieres->contains($matiere->id) : collect(old('matieres'))->contains($matiere->id ?? '');
+                    $note = isset($etudiant) ? $etudiant->matieres->find($matiere->id)->pivot->note ?? '' : old('notes.'.$matiere->id);
+                @endphp
+                <div class="d-flex align-items-center mb-2">
+                    <input type="checkbox" name="matieres[]" value="{{ $matiere->id }}" id="matiere_{{ $matiere->id }}" {{ $checked ? 'checked' : '' }}>
+                    <label class="me-2" for="matiere_{{ $matiere->id }}">{{ $matiere->nom }} ({{ $matiere->coefficient }})</label>
+                    <input type="number" name="notes[{{ $matiere->id }}]" class="form-control" style="width:100px;" placeholder="Note" min="0" max="20" value="{{ $note }}">
+                </div>
+            @endforeach
         </div>
 
         <button type="submit" class="btn btn-success">{{ isset($etudiant) ? 'Modifier' : 'Ajouter' }}</button>

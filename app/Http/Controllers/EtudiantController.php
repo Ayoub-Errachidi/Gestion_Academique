@@ -67,17 +67,23 @@ class EtudiantController extends Controller
             'classe_id' => 'required|exists:classes,id',
             'matieres' => 'array',
             'matieres.*' => 'exists:matieres,id',
+            'notes' => 'array',
+            'notes.*' => 'nullable|numeric|min:0|max:20', // notes entre 0 et 20
         ]);
 
         $etudiant = Etudiant::create($request->only('nom','prenom','email','age','classe_id'));
 
-        // Ajouter matières sélectionnées
+        // Ajouter matières + notes
         if($request->matieres){
-            $etudiant->matieres()->attach($request->matieres);
+            $data = [];
+            foreach($request->matieres as $matiere_id){
+                $data[$matiere_id] = ['note' => $request->notes[$matiere_id] ?? null];
+            }
+            $etudiant->matieres()->sync($data);
         }
 
         return redirect()->route('etudiants.index')
-                         ->with('success', 'Etudiant ajouté avec succès');
+                        ->with('success', 'Etudiant ajouté avec succès');
     }
 
     // EDIT FORM
@@ -90,8 +96,7 @@ class EtudiantController extends Controller
     }
 
     // UPDATE
-    public function update(Request $request, $id)
-    {
+    public function update(Request $request, $id){
         $etudiant = Etudiant::findOrFail($id);
 
         $request->validate([
@@ -102,15 +107,26 @@ class EtudiantController extends Controller
             'classe_id' => 'required|exists:classes,id',
             'matieres' => 'array',
             'matieres.*' => 'exists:matieres,id',
+            'notes' => 'array',
+            'notes.*' => 'nullable|numeric|min:0|max:20',
         ]);
 
+        // Mettre à jour l'étudiant
         $etudiant->update($request->only('nom','prenom','email','age','classe_id'));
 
-        // Synchroniser matières sélectionnées
-        $etudiant->matieres()->sync($request->matieres ?? []);
+        // Synchroniser matières + notes
+        if($request->matieres){
+            $data = [];
+            foreach($request->matieres as $matiere_id){
+                $data[$matiere_id] = ['note' => $request->notes[$matiere_id] ?? null];
+            }
+            $etudiant->matieres()->sync($data);
+        } else {
+            $etudiant->matieres()->detach();
+        }
 
         return redirect()->route('etudiants.index')
-                         ->with('success', 'Etudiant modifié avec succès');
+                        ->with('success', 'Etudiant modifié avec succès');
     }
 
     // DELETE

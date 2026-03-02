@@ -25,8 +25,7 @@ class Etudiant extends Model
     ];
 
     // Chaque étudiant appartient à une classe
-    public function classe()
-    {
+    public function classe(){
         return $this->belongsTo(Classe::class);
     }
 
@@ -34,5 +33,9 @@ class Etudiant extends Model
     public function matieres(): BelongsToMany {
         return $this->belongsToMany(Matiere::class)
                 ->withPivot('note')->withTimestamps();
+    }
+
+    public function moyenne(){
+        return $this->matieres()->avg('note');
     }
 }
