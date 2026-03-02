@@ -32,6 +32,7 @@ class Etudiant extends Model
 
     // Relation ManyToMany avec Matiere
     public function matieres(): BelongsToMany {
-        return $this->belongsToMany(Matiere::class);
+        return $this->belongsToMany(Matiere::class)
+                ->withPivot('note')->withTimestamps();
     }
 }

@@ -18,11 +18,12 @@
                    class="form-control me-2"
                    placeholder="Rechercher par nom..."
                    value="{{ request('search') }}">
-            
+
             <select name="classe_id" class="form-select me-2">
                 <option value="">Toutes les classes</option>
                 @foreach($classes as $classe)
-                    <option value="{{ $classe->id }}" {{ request('classe_id') == $classe->id ? 'selected' : '' }}>
+                    <option value="{{ $classe->id }}"
+                        {{ request('classe_id') == $classe->id ? 'selected' : '' }}>
                         {{ $classe->nom }}
                     </option>
                 @endforeach
@@ -35,11 +36,16 @@
 
     </div>
 
-    {{-- Filtres par statut --}}
+    {{-- Filtres --}}
     <div class="mb-3">
-        <a href="{{ route('etudiants.index') }}" class="btn btn-secondary btn-sm">Tous</a>
-        <a href="{{ route('etudiants.index', array_merge(request()->all(), ['status' => 'active'])) }}" class="btn btn-success btn-sm">Actifs</a>
-        <a href="{{ route('etudiants.index', array_merge(request()->all(), ['status' => 'deleted'])) }}" class="btn btn-danger btn-sm">Supprimés</a>
+        <a href="{{ route('etudiants.index') }}"
+           class="btn btn-secondary btn-sm">Tous</a>
+
+        <a href="{{ route('etudiants.index', array_merge(request()->all(), ['status' => 'active'])) }}"
+           class="btn btn-success btn-sm">Actifs</a>
+
+        <a href="{{ route('etudiants.index', array_merge(request()->all(), ['status' => 'deleted'])) }}"
+           class="btn btn-danger btn-sm">Supprimés</a>
     </div>
 
     {{-- Table --}}
@@ -64,7 +70,7 @@
                         Classe
                     </a>
                 </th>
-                <th>Matières</th>
+                <th>Matières (Notes)</th>
                 <th>Statut</th>
                 <th>Actions</th>
             </tr>
@@ -79,11 +85,16 @@
                 <td>{{ $etudiant->email }}</td>
                 <td>{{ $etudiant->age }}</td>
                 <td>{{ $etudiant->classe->nom ?? 'Non affectée' }}</td>
+
+                {{-- Matières et Notes --}}
                 <td>
                     @foreach($etudiant->matieres as $matiere)
-                        {{ $matiere->nom }}{{ !$loop->last ? ',' : '' }}
+                        {{ $matiere->nom }} ({{ $matiere->pivot->note ?? '-' }})
+                        @if (!$loop->last), @endif
                     @endforeach
                 </td>
+
+                {{-- Statut --}}
                 <td>
                     @if($etudiant->deleted_at)
                         <span class="badge bg-danger">Supprimé</span>
@@ -91,29 +102,44 @@
                         <span class="badge bg-success">Actif</span>
                     @endif
                 </td>
+
+                {{-- Actions --}}
                 <td>
                     @if(!$etudiant->deleted_at)
-                        <a href="{{ route('etudiants.edit', $etudiant->id) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        <a href="{{ route('etudiants.edit', $etudiant->id) }}"
+                           class="btn btn-warning btn-sm">Modifier</a>
 
-                        <form action="{{ route('etudiants.destroy', $etudiant->id) }}" method="POST" class="d-inline">
+                        <form action="{{ route('etudiants.destroy', $etudiant->id) }}"
+                              method="POST"
+                              class="d-inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer ?')">
+                            <button type="submit"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Supprimer ?')">
                                 Supprimer
                             </button>
                         </form>
                     @else
-                        <form action="{{ route('etudiants.restore', $etudiant->id) }}" method="POST" class="d-inline">
+                        <form action="{{ route('etudiants.restore', $etudiant->id) }}"
+                              method="POST"
+                              class="d-inline">
                             @csrf
                             @method('PUT')
-                            <button type="submit" class="btn btn-success btn-sm">Restaurer</button>
+                            <button type="submit"
+                                    class="btn btn-success btn-sm">
+                                Restaurer
+                            </button>
                         </form>
                     @endif
                 </td>
+
             </tr>
             @empty
             <tr>
-                <td colspan="9" class="text-center">Aucun étudiant trouvé</td>
+                <td colspan="9" class="text-center">
+                    Aucun étudiant trouvé
+                </td>
             </tr>
             @endforelse
         </tbody>
