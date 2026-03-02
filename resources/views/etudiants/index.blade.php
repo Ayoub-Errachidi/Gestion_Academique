@@ -19,6 +19,16 @@
                    placeholder="Rechercher par nom..."
                    value="{{ request('search') }}">
 
+            <select name="classe_id" class="form-select me-2">
+                <option value="">Toutes les classes</option>
+                @foreach($classes as $classe)
+                    <option value="{{ $classe->id }}"
+                        {{ request('classe_id') == $classe->id ? 'selected' : '' }}>
+                        {{ $classe->nom }}
+                    </option>
+                @endforeach
+            </select>
+
             <button type="submit" class="btn btn-outline-success">
                 Rechercher
             </button>

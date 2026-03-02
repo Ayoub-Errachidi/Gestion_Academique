@@ -18,11 +18,17 @@ class EtudiantController extends Controller
             $query->where('nom', 'like', '%' . $request->search . '%');
         }
 
-        // statut de colonne deleted
+        // Filtrage par statut
         if ($request->status == 'deleted') {
             $query->onlyTrashed();
         } elseif ($request->status == 'active') {
             $query->whereNull('deleted_at');
+        }
+
+
+        // Filtre par classe
+        if ($request->classe_id) {
+            $query->where('classe_id', $request->classe_id);
         }
 
         // Tri dynamique
@@ -33,9 +39,12 @@ class EtudiantController extends Controller
         $etudiants = $query->paginate(5);
 
         // Search
-        $etudiants->appends($request->only(['search', 'status', 'sort', 'direction']));
+        $etudiants->appends($request->only(['search', 'classe_id', 'status', 'sort', 'direction']));
 
-        return view('etudiants.index', compact('etudiants'));
+        // Pour le select filtre
+        $classes = Classe::all();
+
+        return view('etudiants.index', compact('etudiants', 'classes'));
     }
 
     // FORM CREATE
