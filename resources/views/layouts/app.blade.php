@@ -8,7 +8,7 @@
 
 <div class="container mt-5">
 
-    <h2 class="mb-4 text-center">Gestion des Etudiants</h2>
+    <h2 class="mb-4 text-center">Système de gestion académique avancé</h2>
 
     @if(session('success'))
         <div class="alert alert-success">

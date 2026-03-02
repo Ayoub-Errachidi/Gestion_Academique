@@ -20,4 +20,8 @@ class Matiere extends Model
         return $this->belongsToMany(Etudiant::class)
                 ->withPivot('note')->withTimestamps();
     }
+
+    public function enseignants(){
+        return $this->belongsToMany(Enseignant::class)->withTimestamps();
+    }
 }
