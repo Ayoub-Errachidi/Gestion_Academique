@@ -16,5 +16,6 @@ class Etudiant extends Model
         'prenom',
         'email',
         'age',
+        'classe_id'
     ];
 }
