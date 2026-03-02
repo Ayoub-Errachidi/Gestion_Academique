@@ -10,15 +10,25 @@ class EtudiantController extends Controller
 {
     // READ
     public function index(Request $request){
-        $query = Etudiant::with('classe');
+
+        //Relation Classe et SoftDeletes
+        $query = Etudiant::with('classe')->withTrashed();
 
         if ($request->search) {
             $query->where('nom', 'like', '%' . $request->search . '%');
         }
 
+        // statut de colonne deleted
+        if ($request->status == 'deleted') {
+            $query->onlyTrashed();
+        } elseif ($request->status == 'active') {
+            $query->whereNull('deleted_at');
+        }
+
         $etudiants = $query->paginate(5);
 
-        $etudiants->appends($request->only('search'));
+        // Search avec status
+        $etudiants->appends($request->only(['search', 'status']));
 
         return view('etudiants.index', compact('etudiants'));
     }
