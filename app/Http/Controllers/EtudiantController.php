@@ -3,21 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Models\Etudiant;
+use App\Models\Classe;
 use Illuminate\Http\Request;
 
 class EtudiantController extends Controller
 {
     // READ
-    public function index()
-    {
-        $etudiants = Etudiant::all();
+    public function index(Request $request){
+        $query = Etudiant::with('classe');
+
+        if ($request->search) {
+            $query->where('nom', 'like', '%' . $request->search . '%');
+        }
+
+        $etudiants = $query->paginate(5);
+
+        $etudiants->appends($request->only('search'));
+
         return view('etudiants.index', compact('etudiants'));
     }
 
     // FORM CREATE
     public function create()
     {
-        return view('etudiants.create');
+        $classes = Classe::all(); // pour le select
+        return view('etudiants.create', compact('classes'));
     }
 
     // STORE
@@ -27,7 +37,8 @@ class EtudiantController extends Controller
             'nom' => 'required',
             'prenom' => 'required',
             'email' => 'required|email|unique:etudiants',
-            'age' => 'required|integer|min:1'
+            'age' => 'required|integer|min:1',
+            'classe_id' => 'required|exists:classes,id',
         ]);
 
         Etudiant::create($request->all());
@@ -40,7 +51,8 @@ class EtudiantController extends Controller
     public function edit($id)
     {
         $etudiant = Etudiant::findOrFail($id);
-        return view('etudiants.edit', compact('etudiant'));
+        $classes = Classe::all();
+        return view('etudiants.edit', compact('etudiant', 'classes'));
     }
 
     // UPDATE
@@ -52,7 +64,8 @@ class EtudiantController extends Controller
             'nom' => 'required',
             'prenom' => 'required',
             'email' => 'required|email|unique:etudiants,email,' . $id,
-            'age' => 'required|integer|min:1'
+            'age' => 'required|integer|min:1',
+            'classe_id' => 'required|exists:classes,id',
         ]);
 
         $etudiant->update($request->all());
