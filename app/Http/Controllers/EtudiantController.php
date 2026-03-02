@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Etudiant;
 use App\Models\Classe;
+use App\Models\Matiere;
 use Illuminate\Http\Request;
 
 class EtudiantController extends Controller
@@ -12,7 +13,7 @@ class EtudiantController extends Controller
     public function index(Request $request){
 
         //Relation Classe et SoftDeletes
-        $query = Etudiant::with('classe')->withTrashed();
+        $query = Etudiant::with(['classe', 'matieres'])->withTrashed();
 
         if ($request->search) {
             $query->where('nom', 'like', '%' . $request->search . '%');
@@ -50,8 +51,9 @@ class EtudiantController extends Controller
     // FORM CREATE
     public function create()
     {
-        $classes = Classe::all(); // pour le select
-        return view('etudiants.create', compact('classes'));
+        $classes = Classe::all();
+        $matieres = Matiere::all(); // toutes les matières
+        return view('etudiants.create', compact('classes','matieres'));
     }
 
     // STORE
@@ -63,9 +65,16 @@ class EtudiantController extends Controller
             'email' => 'required|email|unique:etudiants',
             'age' => 'required|integer|min:1',
             'classe_id' => 'required|exists:classes,id',
+            'matieres' => 'array',
+            'matieres.*' => 'exists:matieres,id',
         ]);
 
-        Etudiant::create($request->all());
+        $etudiant = Etudiant::create($request->only('nom','prenom','email','age','classe_id'));
+
+        // Ajouter matières sélectionnées
+        if($request->matieres){
+            $etudiant->matieres()->attach($request->matieres);
+        }
 
         return redirect()->route('etudiants.index')
                          ->with('success', 'Etudiant ajouté avec succès');
@@ -76,7 +85,8 @@ class EtudiantController extends Controller
     {
         $etudiant = Etudiant::findOrFail($id);
         $classes = Classe::all();
-        return view('etudiants.edit', compact('etudiant', 'classes'));
+        $matieres = Matiere::all();
+        return view('etudiants.edit', compact('etudiant', 'classes', 'matieres'));
     }
 
     // UPDATE
@@ -90,9 +100,14 @@ class EtudiantController extends Controller
             'email' => 'required|email|unique:etudiants,email,' . $id,
             'age' => 'required|integer|min:1',
             'classe_id' => 'required|exists:classes,id',
+            'matieres' => 'array',
+            'matieres.*' => 'exists:matieres,id',
         ]);
 
-        $etudiant->update($request->all());
+        $etudiant->update($request->only('nom','prenom','email','age','classe_id'));
+
+        // Synchroniser matières sélectionnées
+        $etudiant->matieres()->sync($request->matieres ?? []);
 
         return redirect()->route('etudiants.index')
                          ->with('success', 'Etudiant modifié avec succès');
