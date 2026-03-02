@@ -52,6 +52,11 @@
            class="btn btn-danger btn-sm">
             Supprimés
         </a>
+        <a href="{{ route('etudiants.index', array_merge(request()->all(), ['status' => 'admis'])) }}" 
+            class="btn btn-primary btn-sm">
+            Étudiants admis
+        </a>
+
     </div>
 
     {{-- Table --}}

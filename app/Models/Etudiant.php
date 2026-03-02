@@ -38,4 +38,12 @@ class Etudiant extends Model
     public function moyenne(){
         return $this->matieres()->avg('note');
     }
+
+    // Scope : Admis > 10
+    public function scopeAdmis($query)
+    {
+        return $query->whereHas('matieres', function($q){
+            $q->where('note', '>=', 10);
+        });
+    }
 }

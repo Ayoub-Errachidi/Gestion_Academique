@@ -24,6 +24,8 @@ class EtudiantController extends Controller
             $query->onlyTrashed();
         } elseif ($request->status == 'active') {
             $query->whereNull('deleted_at');
+        } elseif ($request->status == 'admis') {
+            $query->admis(); // Scope personnalisé
         }
 
 
@@ -114,7 +116,7 @@ class EtudiantController extends Controller
         // Mettre à jour l'étudiant
         $etudiant->update($request->only('nom','prenom','email','age','classe_id'));
 
-        // Synchroniser matières + notes
+        // Synchroniser matières avec notes
         if($request->matieres){
             $data = [];
             foreach($request->matieres as $matiere_id){
