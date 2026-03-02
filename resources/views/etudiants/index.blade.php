@@ -6,6 +6,13 @@
 
     <h2 class="mb-4">Liste des Etudiants</h2>
 
+    {{-- Message Success --}}
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
     {{-- Bouton Ajouter + Recherche --}}
     <div class="d-flex justify-content-between mb-3">
 
@@ -33,12 +40,12 @@
             Tous
         </a>
 
-        <a href="{{ route('etudiants.index', ['status' => 'active']) }}"
+        <a href="{{ route('etudiants.index', array_merge(request()->all(), ['status' => 'active'])) }}"
            class="btn btn-success btn-sm">
             Actifs
         </a>
 
-        <a href="{{ route('etudiants.index', ['status' => 'deleted']) }}"
+        <a href="{{ route('etudiants.index', array_merge(request()->all(), ['status' => 'deleted'])) }}"
            class="btn btn-danger btn-sm">
             Supprimés
         </a>
@@ -49,11 +56,23 @@
         <thead class="table-dark">
             <tr>
                 <th>ID</th>
-                <th>Nom</th>
+                <th>
+                    <a href="{{ route('etudiants.index', array_merge(request()->all(), ['sort' => 'nom', 'direction' => request('direction') === 'asc' ? 'desc' : 'asc'])) }}">
+                        Nom
+                    </a>
+                </th>
                 <th>Prénom</th>
-                <th>Email</th>
+                <th>
+                    <a href="{{ route('etudiants.index', array_merge(request()->all(), ['sort' => 'email', 'direction' => request('direction') === 'asc' ? 'desc' : 'asc'])) }}">
+                        Email
+                    </a>
+                </th>
                 <th>Age</th>
-                <th>Classe</th>
+                <th>
+                    <a href="{{ route('etudiants.index', array_merge(request()->all(), ['sort' => 'classe_id', 'direction' => request('direction') === 'asc' ? 'desc' : 'asc'])) }}">
+                        Classe
+                    </a>
+                </th>
                 <th>Statut</th>
                 <th>Actions</th>
             </tr>

@@ -25,10 +25,15 @@ class EtudiantController extends Controller
             $query->whereNull('deleted_at');
         }
 
+        // Tri dynamique
+        if ($request->sort) {
+            $query->orderBy($request->sort, $request->direction ?? 'asc');
+        }
+
         $etudiants = $query->paginate(5);
 
-        // Search avec status
-        $etudiants->appends($request->only(['search', 'status']));
+        // Search
+        $etudiants->appends($request->only(['search', 'status', 'sort', 'direction']));
 
         return view('etudiants.index', compact('etudiants'));
     }
