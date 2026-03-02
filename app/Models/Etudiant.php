@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
+
 
 class Etudiant extends Model
 {
@@ -25,5 +28,10 @@ class Etudiant extends Model
     public function classe()
     {
         return $this->belongsTo(Classe::class);
+    }
+
+    // Relation ManyToMany avec Matiere
+    public function matieres(): BelongsToMany {
+        return $this->belongsToMany(Matiere::class);
     }
 }
