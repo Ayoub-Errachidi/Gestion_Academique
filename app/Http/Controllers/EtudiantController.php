@@ -145,4 +145,14 @@ class EtudiantController extends Controller
         return redirect()->route('etudiants.index')
                         ->with('success', 'Etudiant restauré avec succès');
     }
+
+    public function stats(){
+        // Nb etudiants par classe
+        $classes = Classe::withCount('etudiants')->get();
+
+        // Nb etudiants par matiere
+        $matieres = Matiere::withCount('etudiants')->get();
+
+        return view('etudiants.stats', compact('classes', 'matieres'));
+    }
 }
