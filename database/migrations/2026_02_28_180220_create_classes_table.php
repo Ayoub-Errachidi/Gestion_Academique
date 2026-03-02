@@ -11,7 +11,10 @@ return new class extends Migration
         Schema::create('classes', function (Blueprint $table) {
             $table->id();
             $table->string('nom');
-            $table->string('niveau'); 
+            $table->string('niveau');
+            
+            $table->softDeletes();
+            
             $table->timestamps();
         });
     }

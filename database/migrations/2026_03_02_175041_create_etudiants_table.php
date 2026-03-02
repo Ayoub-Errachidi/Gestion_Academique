@@ -14,6 +14,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->integer('age');
 
+            $table->softDeletes();
+
             $table->foreignId('classe_id')->constrained()->onDelete('cascade');
             
             $table->timestamps();

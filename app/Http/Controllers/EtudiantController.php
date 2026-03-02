@@ -75,11 +75,17 @@ class EtudiantController extends Controller
     }
 
     // DELETE
-    public function destroy($id)
-    {
-        Etudiant::destroy($id);
-
+    public function destroy($id){
+        $etudiant = Etudiant::findOrFail($id);
+        $etudiant->delete(); // soft delete
         return redirect()->route('etudiants.index')
-                         ->with('success', 'Etudiant supprimé avec succès');
+                        ->with('success', 'Etudiant supprimé (soft delete)');
+    }
+
+    public function restore($id){
+        $etudiant = Etudiant::withTrashed()->findOrFail($id);
+        $etudiant->restore();
+        return redirect()->route('etudiants.index')
+                        ->with('success', 'Etudiant restauré avec succès');
     }
 }
